@@ -16,6 +16,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -121,6 +124,7 @@ namespace AnnoMapEditor.Mods.Serialization
 
             IList<MapTemplateAsset> mapTemplatesToReplace = GetMapTemplatesToReplace(session, mod.MapType);
 
+            WriteBanner(mod, modPath);
             await WriteModinfoJson(mod, modPath);
 
             //Only write Language XML for OW Maps, as only they need naming in a menu
@@ -189,6 +193,28 @@ namespace AnnoMapEditor.Mods.Serialization
             await writer.WriteAsync(sb.ToString());
         }
 
+        private static void WriteBanner(Mod mod, string modPath)
+        {
+            BitmapFrame mapPreviewFrame = BitmapFrame.Create(mod.MapPreview);
+
+            DrawingVisual drawingVisual = new();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                drawingContext.DrawImage(mapPreviewFrame, new Rect(0, 0, mapPreviewFrame.PixelWidth, mapPreviewFrame.PixelHeight));
+                drawingContext.DrawImage(mod.MapTemplate.Session.Icon, new Rect(0, 0, 128, 128));
+            }
+
+            RenderTargetBitmap bitmap = new RenderTargetBitmap(mapPreviewFrame.PixelWidth, mapPreviewFrame.PixelHeight, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(drawingVisual);
+
+            PngBitmapEncoder pngEncoder = new();
+            pngEncoder.Frames.Add(BitmapFrame.Create(bitmap));
+
+            string imagePath = Path.Combine(modPath, "banner.png");
+            using FileStream fs = File.OpenWrite(imagePath);
+            pngEncoder.Save(fs);
+        }
+
         private static async Task WriteModinfoJson(Mod mod, string modPath)
         {
             string modDescription;
@@ -213,7 +239,8 @@ namespace AnnoMapEditor.Mods.Serialization
                 Category = new("Map"),
                 Description = new(modDescription),
                 CreatorName = App.TitleShort,
-                CreatorContact = "https://github.com/anno-mods/AnnoMapEditor"
+                CreatorContact = "https://github.com/anno-mods/AnnoMapEditor",
+                Image = ""
             };
 
             string modinfoPath = Path.Combine(modPath, "modinfo.json");

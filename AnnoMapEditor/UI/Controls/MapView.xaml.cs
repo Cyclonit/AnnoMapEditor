@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace AnnoMapEditor.UI.Controls
@@ -179,6 +180,7 @@ namespace AnnoMapEditor.UI.Controls
 
                 _mapTemplate = mapTemplate;
 
+                addIslandCanvas.Children.Clear();
                 mapTemplateCanvas.Children.Clear();
                 if (mapTemplate is null)
                 {
@@ -269,7 +271,7 @@ namespace AnnoMapEditor.UI.Controls
             viewModel.IslandAdded += AddIslandButton_IslandAdded;
 
             _addIslands.Add(button);
-            mapTemplateCanvas.Children.Add(button);
+            addIslandCanvas.Children.Add(button);
 
             MoveAddIsland(button);
         }
@@ -587,8 +589,12 @@ namespace AnnoMapEditor.UI.Controls
             float scale = (float)Math.Min(requiredScaleX, requiredScaleY);
 
             mapTemplateCanvas.RenderTransform = new ScaleTransform(scale, scale);
-            rotationCanvas.Width = scale * _mapTemplate.Size.X;
-            rotationCanvas.Height = scale * _mapTemplate.Size.Y;
+            mapTemplateRotationCanvas.Width = scale * _mapTemplate.Size.X;
+            mapTemplateRotationCanvas.Height = scale * _mapTemplate.Size.Y;
+
+            addIslandCanvas.RenderTransform = new ScaleTransform(scale, scale);
+            addIslandRotationCanvas.Width = scale * _mapTemplate.Size.X;
+            addIslandRotationCanvas.Height = scale * _mapTemplate.Size.Y;
         }
 
         private void LinkMapTemplateEventHandlers(MapTemplate mapTemplate)
@@ -696,7 +702,7 @@ namespace AnnoMapEditor.UI.Controls
         {
             if (_mapTemplate is null) return;
 
-            foreach (object item in mapTemplateCanvas.Children)
+            foreach (object item in addIslandCanvas.Children)
             {
                 if (item is AddIslandButton addIsland)
                 {
@@ -750,6 +756,21 @@ namespace AnnoMapEditor.UI.Controls
                     startViewModel.Element.Position = startViewModel.Element.Position.Clamp(_mapTemplate.PlayableArea);
                 }
             }
+        }
+
+        public BitmapSource RenderMapPreview()
+        {
+            Size size = new(mapTemplateRotationCanvas.Width, mapTemplateRotationCanvas.Height);
+            RenderTargetBitmap preview = new((int) size.Width, (int) size.Height, 96, 96, PixelFormats.Pbgra32);
+            DrawingVisual drawingVisual = new();
+            using (DrawingContext context = drawingVisual.RenderOpen())
+            {
+                context.DrawRectangle(new VisualBrush(mapTemplateRotationCanvas), null, new Rect(new Point(), size));
+                context.Close();
+            }
+            preview.Render(drawingVisual);
+
+            return preview;
         }
     }
 }

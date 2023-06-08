@@ -1,5 +1,6 @@
 ﻿using AnnoMapEditor.MapTemplates.Models;
 using AnnoMapEditor.Mods.Enums;
+using System.Windows.Media.Imaging;
 
 /*
  * Modloader doesn't support a7t because they are loaded as .rda archive.
@@ -28,13 +29,16 @@ namespace AnnoMapEditor.Mods.Models
 
         public MapType? MapType { get; init; }
 
+        public BitmapSource MapPreview { get; init; }
 
-        public Mod(string name, string? modId, MapTemplate mapTemplate, MapType? mapType)
+
+        public Mod(string name, string? modId, MapTemplate mapTemplate, MapType? mapType, BitmapSource mapPreview)
         {
             Name = name;
             Id = modId;
             MapTemplate = mapTemplate;
             MapType = mapType;
+            MapPreview = mapPreview;
         }
     }
 }

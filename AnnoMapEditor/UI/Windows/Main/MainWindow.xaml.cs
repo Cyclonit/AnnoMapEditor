@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace AnnoMapEditor.UI.Windows.Main
 {
@@ -172,7 +174,8 @@ namespace AnnoMapEditor.UI.Windows.Main
             if (ViewModel.MapTemplate is null)
                 return;
 
-            OverlayService.Instance.Show(new ExportAsModViewModel(ViewModel.MapTemplate));
+            BitmapSource mapPreview = Map.RenderMapPreview();
+            OverlayService.Instance.Show(new ExportAsModViewModel(ViewModel.MapTemplate, mapPreview));
         }
 
         private void NewMapFile_Click(object sender, RoutedEventArgs e)

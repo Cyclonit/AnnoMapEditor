@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace AnnoMapEditor.UI.Overlays.ExportAsMod
 {
@@ -25,6 +26,8 @@ namespace AnnoMapEditor.UI.Overlays.ExportAsMod
         }
 
         public MapTemplate MapTemplate { get; init; }
+
+        private readonly BitmapSource _mapPreview;
 
         public bool IsSaving
         {
@@ -73,9 +76,10 @@ namespace AnnoMapEditor.UI.Overlays.ExportAsMod
         public IEnumerable<MapType> AllowedMapTypes { get; init; } = MapType.All;
 
 
-        public ExportAsModViewModel(MapTemplate mapTemplate)
+        public ExportAsModViewModel(MapTemplate mapTemplate, BitmapSource mapPreview)
         {
             MapTemplate = mapTemplate;
+            _mapPreview = mapPreview;
 
             ShowMapTypeSelection = mapTemplate.Session == SessionAsset.OldWorld;
             if (ShowMapTypeSelection)
@@ -123,7 +127,7 @@ namespace AnnoMapEditor.UI.Overlays.ExportAsMod
                 return false;
             }
 
-            Mod mod = new(ResultingModName, ModID, MapTemplate, SelectedMapType);
+            Mod mod = new(ResultingModName, ModID, MapTemplate, SelectedMapType, _mapPreview);
 
             CheckExistingMod();
 

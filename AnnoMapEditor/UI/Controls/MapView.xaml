@@ -8,14 +8,17 @@
     mc:Ignorable="d">
 
     <Grid Width="auto" Height="auto" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <Canvas Name="rotationCanvas" RenderTransformOrigin="0.5, 0.5" Width="0" Height="0">
+        <Canvas Name="mapTemplateRotationCanvas" RenderTransformOrigin="0.5, 0.5" Width="0" Height="0">
             <Canvas.RenderTransform>
                 <RotateTransform Angle="{Binding Source={x:Static local:MapView.MAP_ROTATION_ANGLE}}"/>
             </Canvas.RenderTransform>
             <Canvas 
-                Name="mapTemplateCanvas"
-                Width="0"
-                Height="0" />
+                Name="mapTemplateCanvas" />
+        </Canvas>
+        <Canvas Name="addIslandRotationCanvas" RenderTransformOrigin="0.5, 0.5" Width="0" Height="0">
+            <Canvas.RenderTransform>
+                <RotateTransform Angle="{Binding Source={x:Static local:MapView.MAP_ROTATION_ANGLE}}"/>
+            </Canvas.RenderTransform>
             <Canvas
                 Name="addIslandCanvas" />
         </Canvas>
